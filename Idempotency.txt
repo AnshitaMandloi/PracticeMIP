@@ -1,0 +1,23 @@
+Idempotency
+
+Definition: Ek operation idempotent hai agar usse ek baar karo ya 10 baar, final result (server ka state) same rahe.
+
+Real-life example: Lift ka button. Ek baar dabao ya paanch baar, lift ek hi baar aayegi.
+
+Kyun zaroori hai? Network unreliable hota hai. Client ne request bheji, timeout aa gaya, ab client ko pata nahi ki request process hui ya nahi. Wo retry karega. Agar API idempotent nahi hai, to double payment ya duplicate order ban sakta hai.
+
+HTTP methods mein:
+
+Method	Idempotent?	Kyun
+GET	Haan	Sirf data padhta hai
+PUT	Haan	Poora resource replace karta hai, baar-baar same result
+DELETE	Haan	Pehli baar delete hua, baad mein bhi "gone" hi hai
+POST	Nahi	Har baar naya resource banta hai
+PATCH	Depends	set status=PAID idempotent hai, balance += 100 nahi
+
+POST ko idempotent kaise banayein: Idempotency Key
+
+Client har request ke saath unique key bhejta hai: Idempotency-Key: 7f3a-91bc-...
+Server key ko DB/Redis mein store karta hai, saath mein response.
+Same key dobara aaye, to server naya kaam nahi karta, purana saved response return kar deta hai.
+DB mein idempotency_key column pe unique constraint lagao, taaki do parallel requests aayein to bhi ek hi succeed ho (race condition se bachne ke liye). Stripe aur Razorpay jaise payment APIs yehi pattern use karte hain.

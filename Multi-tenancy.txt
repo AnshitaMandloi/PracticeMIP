@@ -1,0 +1,17 @@
+Multi-tenancy
+
+Definition: Ek hi application instance multiple customers (tenants) ko serve karta hai, aur har tenant ka data ek doosre se isolated rehta hai.
+
+Real-life example: Apartment building. Building ek hai (shared infrastructure), lekin har family ka flat alag aur private hai. Slack, Shopify, Zoho: sab multi-tenant SaaS hain. Har company ek tenant hai.
+
+Isolation ke 3 common models:
+
+Database per tenant: Har tenant ka alag DB. Isolation sabse strong, lekin cost aur maintenance zyada.
+Schema per tenant: Ek DB, har tenant ka alag schema (PostgreSQL mein achha kaam karta hai).
+Shared schema (tenant_id column): Sab tenants ek hi tables mein, har row pe tenant_id. Sabse sasta aur scalable, lekin query mein tenant_id filter bhoolna = data leak.
+
+API level pe tenant kaise identify karte hain:
+
+Subdomain: acme.myapp.com
+Header: X-Tenant-ID: acme
+JWT claim: token ke andar tenantId (sabse secure, kyunki client fake nahi kar sakta)
